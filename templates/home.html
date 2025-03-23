@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload </title>
+    <script>
+        <!--no file selected error-->
+        function validateForm(event) {
+            var fileInput = document.getElementById("fileInput");
+            var errorText = document.getElementById("errorText");
+
+            if (fileInput.files.length === 0) {
+                event.preventDefault(); // Prevent form submission
+                errorText.innerText = "Please select a file before uploading.";
+                errorText.style.color = "red";
+            } else {
+                errorText.innerText = ""; // Clear error message
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>Upload a File</h2>
+    <form action="/upload/" method="post" enctype="multipart/form-data" onsubmit="validateForm(event)">
+        <input type="file" id="fileInput" name="file">
+        <button type="submit">Upload</button>
+    </form>
+    <p id="errorText"></p>
+    
+
+    <footer><h2><a href="/about"><em>About</em></a></h2></footer>
+</body>
+</html>
