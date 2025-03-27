@@ -8,6 +8,6 @@ def home():
 
 @view.route("/about")  # Route for about page
 def about():
-    with open("about.txt","r") as file :
+    with open("precise_point_pos/about.txt","r") as file :
         content = file.read()
     return render_template("about.html",content=content)  # Show about.html
