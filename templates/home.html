@@ -3,17 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Upload </title>
+    <title>File Upload</title>
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121212; /* Default solid color */
+    background-image: url("{{ url_for('static', filename='images/wall_paper.jpg') }}");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    height: 100vh; /* Ensures background covers full screen */
+    margin: 0;
+    padding: 0;
+}
+
+        h2 {
+            background-color: #ffcc00; /* Highlight */
+            color: black;
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+        .upload-container {
+            background: rgba(30, 30, 30, 0.8); /* Semi-transparent background */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.2);
+            width: 300px; /* Adjusted width */
+            margin-top: 20px;
+        }
+
+        input[type="file"] {
+            margin: 15px 0;
+            padding: 8px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        button {
+            background: #ffcc00;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #ffaa00;
+        }
+
+        #errorText {
+            color: red;
+            font-weight: bold;
+        }
+
+        footer {
+            margin-top: 30px;
+        }
+
+        footer a {
+            color: black; /* Changed to black */
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            background: #ffcc00;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        footer a:hover {
+            background: #ffaa00;
+        }
+    </style>
+
     <script>
-        <!--no file selected error-->
         function validateForm(event) {
             var fileInput = document.getElementById("fileInput");
             var errorText = document.getElementById("errorText");
 
             if (fileInput.files.length === 0) {
                 event.preventDefault(); // Prevent form submission
-                errorText.innerText = "Please select a file before uploading.";
-                errorText.style.color = "red";
+                errorText.innerText = "⚠️ Please select a file before uploading.";
             } else {
                 errorText.innerText = ""; // Clear error message
             }
@@ -21,14 +99,20 @@
     </script>
 </head>
 <body>
-    <h2>Upload a File</h2>
-    <form action="/upload/" method="post" enctype="multipart/form-data" onsubmit="validateForm(event)">
-        <input type="file" id="fileInput" name="file">
-        <button type="submit">Upload</button>
-    </form>
-    <p id="errorText"></p>
-    
 
-    <footer><h2><a href="/about"><em>About</em></a></h2></footer>
+    <h2>Upload a File</h2>
+    <div class="upload-container">
+        <form action="/upload/" method="post" enctype="multipart/form-data" onsubmit="validateForm(event)">
+            <input type="file" id="fileInput" name="file">
+            <br>
+            <button type="submit">Upload</button>
+        </form>
+        <p id="errorText"></p>
+    </div>
+
+    <footer>
+        <h2><a href="/about"><em>About</em></a></h2>
+    </footer>
+
 </body>
 </html>
