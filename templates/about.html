@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Page</title>
+    <title>About Our PPP Service</title>
     <style>
         body {
             background-image: url("{{ url_for('static', filename='images/about_page.png') }}");
@@ -12,39 +12,87 @@
             height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
-            color: white; /* Light text for better contrast */
+            color: white;
             text-align: center;
         }
 
         .content {
             width: 60%;
             margin: auto;
-            background: rgba(0, 0, 0, 0.6); /* Dark semi-transparent box */
-            padding: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 30px;
             border-radius: 10px;
+            line-height: 1.6;
         }
 
         h1, h2 {
-            color: #FFD700; /* Gold text */
+            color: #FFD700;
+        }
+
+        .service-description {
+            text-align: left;
+            margin: 20px 0;
+            padding: 0 20px;
+        }
+
+        .feature-list {
+            text-align: left;
+            margin-left: 40px;
+            margin-bottom: 20px;
         }
 
         a {
-            color: rgb(255, 255, 255); /* "Return to home" link in black */
+            color: #FFD700;
             text-decoration: none;
             font-weight: bold;
+            display: inline-block;
+            margin-top: 20px;
         }
 
         a:hover {
             text-decoration: underline;
         }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background: rgba(255, 215, 0, 0.3);
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
     <div class="content">
-        <h1>This is the About Page!</h1>
+        <h1>Precise Point Positioning Service</h1>
         <hr>
-        <p>{{ content }}</p>
-        <h2>Spring 2025</h2>
+        <div class="service-description">
+
+            <p>To use this service:</p>
+            <ul class="feature-list">
+                <li>The only thing to do is Uploading a <strong>RINEX observation file</strong></li>
+                <li>
+                    <strong>PLEASE SET YOUR RINEX NAME IN THIS FORMAT : "yourstationname"MMDD.yyo</strong>
+                </li>
+                <li>The program will automatically download:
+                    <ul>
+                        <li>1-Precise orbits and ephemerides for the observation day and next day</li>
+                        <li>2-Satellite clock corrections</li>
+
+                    </ul>
+                </li>
+            </ul>
+            <p>The system processes your data to deliver centimeter-level accuracy positioning results.</p>
+            
+
+
+
+
+
+            <p>This product is designed and developed by <strong>Python</strong> and <strong>(HTML + CSS + JS)</strong>.</p>
+            <p>The method used to provide precise coordinates is <strong>Precise Point Positioning (PPP)</strong>.</p>
+        </div>
+        <hr>
+        <h2>M.H.Beglari-spring 2025</h2>
         <h2><a href="/">Return to Home</a></h2>
     </div>
 </body>

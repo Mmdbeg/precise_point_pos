@@ -1,8 +1,5 @@
 import datetime as dt
-import sys
-import matplotlib.pyplot as plt 
-import numpy 
-import flask
+
 
 def gps_week_and_day(date):
     """Calculate GPS week number and day of the week for a given date."""
@@ -12,9 +9,9 @@ def gps_week_and_day(date):
     return gps_week, gps_day
 
 # Read input arguments from Bash script
-d = int(sys.argv[1])
-m = int(sys.argv[2])
-y = int(sys.argv[3])
+d = 12
+m = 9
+y = 2010
 
 # Convert input to datetime object
 x = dt.datetime(y, m, d)
@@ -25,5 +22,4 @@ gps_week, gps_day = gps_week_and_day(x)
 #  FIX: Print output in the correct format
 print("GPS Week:", gps_week)
 print("Day:", gps_day)
-
 
