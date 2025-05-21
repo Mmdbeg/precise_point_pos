@@ -3,6 +3,7 @@ from flask import Blueprint, request, render_template
 import datetime as dt
 import re
 import subprocess
+import urllib.request
 
 upload_rinex = Blueprint("upload_rinex", __name__)
 
@@ -20,13 +21,14 @@ def extract_year(filename):
     return match.group(1) if match else None
 #-+-+-+---+-+-+-+-+-++-+-+-+-+-++-+-+-+-+-++-+-+-+-+-++-+-+-+-+-++-+-+-+-+-+-+-+-+---+-+-+-+-+-++-+-+-+-+-++-+-+-+-+-++-+-+-+-+-++-+-+-
 
-# this code can calculate gps day (use it to down load precise ephemerieds and clock correction)+-++-+-+-+-+--+-+--+-+-+-+-+-+-+-+-+-+
+# this function can calculate gps day (use it to down load precise ephemerieds and clock correction)+-++-+-+-+-+--+-+--+-+-+-+-+-+-+-+-+-+
 def gps_week_and_day(date):
     """Calculate GPS week number and day of the week for a given date."""
     gps_start_epoch = dt.datetime(1980, 1, 6)
     delta_days = (date - gps_start_epoch).days  # Convert timedelta to integer days
     gps_week, gps_day = divmod(delta_days, 7)  # Compute week and day
     return gps_week, gps_day
+
 
 
 @upload_rinex.route("/", methods=["GET", "POST"])

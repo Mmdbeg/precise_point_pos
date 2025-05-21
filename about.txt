@@ -1,22 +1,14 @@
-a little about ppp (precise point positioning) :    
+ this product designed and developed by python and (html +css + js) . 
+ the method which this service uses to provide you precise coordinate is Precise Point Positioning (ppp).
+ For using this service you must upload a RINEX observation file .------------------------------------------------------------------------------------------------------------------------------------------------- The program will automatically download its needed file which are precise orbits ephemeries for the observation day and next day ; and satellite clock correction either. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 
-      PPP uses accurate orbital data AND accurate satellite clock data as provided
-e.g. by the IGS, and DUAL-frequency pseudo-range AND carrier phase observations collected
-by the user, and uses the ionosphere-free function of the observables
-
-2--------------
-
-PPP implies single
-receiver positioning (as far as the user is concerned). The second receiver, needed in the
-double difference approach, is essentially replaced by the collection of continuously operating
-receivers around the world.
-
-3------------
-The theoretical foundation of PPP is documented in Zumberge et al. (1997a). They set
-out to develop an efficient approach to make the "accuracy achieved at IGS for global
-solutions" available to users. They recognized that various networks of stations have been
-established around the world to satisfy the need for high accuracy positioning. An example is
-the CORS network consisting of some 80 plus stations operated by the NGS (National
-Geodetic Survey). These networks typically serve on the premise of relative positioning, i.e.
-the user will position himself relative to the nearest CORS station. Sophisticated users might 
 
