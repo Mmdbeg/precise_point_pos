@@ -15,7 +15,13 @@
             height: 100vh;
             margin: 0;
             padding: 0;
-            text-align: center;
+        }
+
+        .top-left {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 320px;
         }
 
         h2 {
@@ -31,8 +37,7 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.2);
-            width: 300px;
-            margin: 20px auto;
+            margin-top: 10px;
         }
 
         input[type="file"] {
@@ -71,14 +76,44 @@
             font-weight: bold;
         }
 
+        #loader {
+            display: none;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #ffcc00;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #loadingText {
+            color: white;
+            margin-top: 5px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
         footer {
-            margin-top: 30px;
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
         }
 
         footer a {
             color: black;
             text-decoration: none;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             background: #ffcc00;
             padding: 5px 10px;
@@ -94,34 +129,44 @@
         function validateForm(event) {
             var fileInput = document.getElementById("fileInput");
             var errorText = document.getElementById("errorText");
+            var loader = document.getElementById("loader");
 
             if (fileInput.files.length === 0) {
-                event.preventDefault(); 
+                event.preventDefault();
                 errorText.innerText = "⚠️ Please select a file before uploading.";
             } else {
                 errorText.innerText = "";
+                loader.style.display = "block"; // Show spinner and message
             }
         }
     </script>
 </head>
 <body>
 
-    <h2>Please Upload your RINEX File</h2>
-    <div class="upload-container">
-        <form action="/upload/" method="post" enctype="multipart/form-data" onsubmit="validateForm(event)">
-            <input type="file" id="fileInput" name="file">
-            <br>
-            <button type="submit">Upload</button>
-        </form>
-        <p id="errorText" class="error-message"></p>
+    <div class="top-left">
+        <h2>Upload Your RINEX File</h2>
+        <div class="upload-container">
+            <form action="/upload/" method="post" enctype="multipart/form-data" onsubmit="validateForm(event)">
+                <input type="file" id="fileInput" name="file">
+                <br>
+                <button type="submit">Upload</button>
+            </form>
 
-        {% if success_message %}
-            <p class="success-message">{{ success_message }}</p>
-        {% endif %}
+            <p id="errorText" class="error-message"></p>
+
+            <div id="loader">
+                <div class="spinner"></div>
+                <p id="loadingText">Downloading files, please wait...</p>
+            </div>
+
+            {% if success_message %}
+                <p class="success-message">{{ success_message }}</p>
+            {% endif %}
+        </div>
     </div>
 
     <footer>
-        <h2><a href="/about"><em>About us & user guied </em></a></h2>
+        <a href="/about"><em>About us & user guide</em></a>
     </footer>
 
 </body>

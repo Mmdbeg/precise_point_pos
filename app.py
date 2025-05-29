@@ -11,6 +11,7 @@ UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
+
 # Register Blueprints
 app.register_blueprint(view)  
 app.register_blueprint(upload_rinex, url_prefix="/upload") 
