@@ -5,6 +5,7 @@ import re
 import requests
 import subprocess
 import shutil
+import time
 upload_rinex = Blueprint("upload_rinex", __name__)
 
 # --- Extract date info from RINEX filename ---
@@ -37,7 +38,9 @@ def decompress_z_file(z_path):
 
 # ---  making a list of files name ---
 def generate_igr_filenames(gps_week, gps_day, days):
-    filenames = []
+    sp3_filenames = []
+    clk_filenames = []
+
     for i in range(days):
         total_day = gps_day + i
         current_week = gps_week + total_day // 7
@@ -46,10 +49,11 @@ def generate_igr_filenames(gps_week, gps_day, days):
         sp3_filename = f"igr{current_week}{current_day}.sp3"
         clk_filename = f"igr{current_week}{current_day}.clk"
 
-        filenames.append(sp3_filename)
-        filenames.append(clk_filename)
+        sp3_filenames.append(sp3_filename)
+        clk_filenames.append(clk_filename)
     
-    return filenames
+    return sp3_filenames + clk_filenames
+
 
 # --- Download SP3 and CLK files ---
 def downloader(gps_week, gps_day, days, folder_path):
@@ -107,18 +111,17 @@ def upload_ri():
             error_message = "⚠️ No file selected!"
             return render_template("home.html", error_message=error_message)
 
-        # Create subfolder
         upload_folder = "uploads"
         file_basename = os.path.splitext(file.filename)[0]
         subfolder_path = os.path.join(upload_folder, file_basename)
         os.makedirs(subfolder_path, exist_ok=True)
         shutil.copy("model/ppp", os.path.join(subfolder_path, "ppp"))
+        shutil.copy("model/runner.sh", os.path.join(subfolder_path, "runner.sh"))
 
-        # Save RINEX file
+
         file_path = os.path.join(subfolder_path, file.filename)
         file.save(file_path)
 
-        # --- Read form values and save to .txt ---
         param_values = {
             "ut_days": request.form.get("ut_days"),
             "dynamics": request.form.get("dynamics"),
@@ -167,32 +170,23 @@ def upload_ri():
 ' GDOP CUTOFF                                 '          {param_values['gdop_cutoff']}
 """
 
-        if request.method == "POST":
-            ...
-            # Meteorological data
-            metro_values = {
-                "temperature": float(request.form.get("temperature", 20.0)),
-                "pressure": float(request.form.get("pressure", 877.189)),
-                "humidity": float(request.form.get("humidity", 50.0)),
-                "trop_scale": float(request.form.get("trop_scale", 1.0)),
-            }
-            met_success_message = "✅ Meteorological data received successfully!"
+        metro_values = {
+            "temperature": float(request.form.get("temperature", 20.0)),
+            "pressure": float(request.form.get("pressure", 877.189)),
+            "humidity": float(request.form.get("humidity", 50.0)),
+            "trop_scale": float(request.form.get("trop_scale", 1.0)),
+        }
+        met_success_message = "✅ Meteorological data received successfully!"
 
-
-
-        param_filename = "L3phase.cmd"
+        param_filename = "L3phase.stat.cmd"
         param_path = os.path.join(subfolder_path, param_filename)
-        with open(param_path, 'w') as f:
+        with open(param_path, 'w', newline='\n') as f:
             f.write(param_text)
 
-
-
-
-        # --- Extract date and download GNSS products ---
         extracted_day = extract_day(file.filename)
         extracted_month = extract_month(file.filename)
         extracted_year = extract_year(file.filename)
-        
+
         if all([extracted_day, extracted_month, extracted_year]):
             full_date = dt.datetime(int("20" + extracted_year), int(extracted_month), int(extracted_day))
             gps_week, gps_day = gps_week_and_day(full_date)
@@ -209,21 +203,22 @@ def upload_ri():
 2 {int(metro_values["pressure"])}
 3 {int(metro_values["humidity"])}
 4 {int(metro_values["trop_scale"])}
-0,0
-""" + "\n" + "\n".join(igr_filenames)
+0,0""" + "\n" + "\n".join(igr_filenames)
 
-            input_file_name = "ppp.inp"
+            input_file_name = "ppp.stat.inp"
             input_path = os.path.join(subfolder_path, input_file_name)
-            with open(input_path, 'w') as f:
+            with open(input_path, 'w', newline='\n') as f:
                 f.write(input_tex)
-
+ 
+            subprocess.run("./runner.sh", shell=True, cwd=f'{subfolder_path}')
 
 
             success_message = (
-                f"✅ File uploaded successfully! Observation Date: {extracted_day}/"
+                f"✅ File uploaded and processed! Observation Date: {extracted_day}/"
                 f"{extracted_month}/20{extracted_year}. GPS Week: {gps_week}, Day: {gps_day}."
             )
         else:
             success_message = f"✅ File uploaded to folder '{file_basename}'! (Date not extracted)"
 
-    return render_template("home.html", success_message=success_message, error_message=error_message,met_success_message=met_success_message)
+    return render_template("home.html", success_message=success_message, error_message=error_message, met_success_message=met_success_message)
+
