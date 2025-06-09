@@ -1,98 +1,11 @@
 import os
 from flask import Blueprint, request, render_template
 import datetime as dt
-import re
-import requests
 import subprocess
 import shutil
-import time
+from functions import *
+
 upload_rinex = Blueprint("upload_rinex", __name__)
-
-# --- Extract date info from RINEX filename ---
-def extract_month(filename):
-    match = re.search(r'[a-zA-Z]+(\d{2})(\d{2})\.\d{2}o$', filename)
-    return match.group(1) if match else None
-
-def extract_day(filename):
-    match = re.search(r'[a-zA-Z]+(\d{2})(\d{2})\.\d{2}o$', filename)
-    return match.group(2) if match else None
-
-def extract_year(filename):
-    match = re.search(r'\.(\d{2})o$', filename)
-    return match.group(1) if match else None
-
-# --- Convert date to GPS week/day ---
-def gps_week_and_day(date):
-    gps_start_epoch = dt.datetime(1980, 1, 6)
-    delta_days = (date - gps_start_epoch).days
-    gps_week, gps_day = divmod(delta_days, 7)
-    return gps_week, gps_day
-
-# --- Decompress .Z files using gzip ---
-def decompress_z_file(z_path):
-    try:
-        subprocess.run(['gzip', '-df', z_path], check=True)
-        print(f"Decompressed: {z_path}")
-    except subprocess.CalledProcessError as e:
-        print(f"Failed to decompress {z_path}: {e}")
-
-# ---  making a list of files name ---
-def generate_igr_filenames(gps_week, gps_day, days):
-    sp3_filenames = []
-    clk_filenames = []
-
-    for i in range(days):
-        total_day = gps_day + i
-        current_week = gps_week + total_day // 7
-        current_day = total_day % 7
-
-        sp3_filename = f"igr{current_week}{current_day}.sp3"
-        clk_filename = f"igr{current_week}{current_day}.clk"
-
-        sp3_filenames.append(sp3_filename)
-        clk_filenames.append(clk_filename)
-    
-    return sp3_filenames + clk_filenames
-
-
-# --- Download SP3 and CLK files ---
-def downloader(gps_week, gps_day, days, folder_path):
-    os.makedirs(folder_path, exist_ok=True)
-    for i in range(days):
-        total_day = gps_day + i
-        current_week = gps_week + total_day // 7
-        current_day = total_day % 7
-
-        sp3_filename = f"igr{current_week}{current_day}.sp3.Z"
-        clk_filename = f"igr{current_week}{current_day}.clk.Z"
-
-        sp3_url = f"https://cddis.nasa.gov/archive/gnss/products/{gps_week}/{sp3_filename}"
-        clk_url = f"https://cddis.nasa.gov/archive/gnss/products/{gps_week}/{clk_filename}"
-
-        sp3_path = os.path.join(folder_path, sp3_filename)
-        clk_path = os.path.join(folder_path, clk_filename)
-
-        try:
-            sp3_response = requests.get(sp3_url)
-            sp3_response.raise_for_status()
-            with open(sp3_path, "wb") as f:
-                f.write(sp3_response.content)
-            print(f"✅ SP3 downloaded: {sp3_filename}")
-        except requests.HTTPError as e:
-            print(f"❌ SP3 download failed: {e}")
-
-        try:
-            clk_response = requests.get(clk_url)
-            clk_response.raise_for_status()
-            with open(clk_path, "wb") as f:
-                f.write(clk_response.content)
-            print(f"✅ CLK downloaded: {clk_filename}")
-        except requests.HTTPError as e:
-            print(f"❌ CLK download failed: {e}")
-
-        # Decompress
-        decompress_z_file(sp3_path)
-        decompress_z_file(clk_path)
 
 # --- Main Flask route ---
 @upload_rinex.route("/", methods=["GET", "POST"])
@@ -171,10 +84,10 @@ def upload_ri():
 """
 
         metro_values = {
-            "temperature": float(request.form.get("temperature", 20.0)),
-            "pressure": float(request.form.get("pressure", 877.189)),
-            "humidity": float(request.form.get("humidity", 50.0)),
-            "trop_scale": float(request.form.get("trop_scale", 1.0)),
+            "temperature": float(request.form.get("temperature")),
+            "pressure": float(request.form.get("pressure")),
+            "humidity": float(request.form.get("humidity")),
+            "trop_scale": float(request.form.get("trop_scale")),
         }
         met_success_message = "✅ Meteorological data received successfully!"
 
@@ -199,10 +112,10 @@ def upload_ri():
 {file.filename}
 {param_filename}
 0,0
-1 {int(metro_values["temperature"])}
-2 {int(metro_values["pressure"])}
-3 {int(metro_values["humidity"])}
-4 {int(metro_values["trop_scale"])}
+1 {float(metro_values["temperature"])}
+2 {float(metro_values["pressure"])}
+3 {float(metro_values["humidity"])}
+4 {float(metro_values["trop_scale"])}
 0,0""" + "\n" + "\n".join(igr_filenames)
 
             input_file_name = "ppp.stat.inp"
@@ -212,6 +125,14 @@ def upload_ri():
  
             subprocess.run("./runner.sh", shell=True, cwd=f'{subfolder_path}')
 
+            sum_file_path = os.path.join(subfolder_path, f"{file_basename}.sum")
+            estimate_text, diff_text = parse_sum_file(sum_file_path)
+
+
+
+
+
+
 
             success_message = (
                 f"✅ File uploaded and processed! Observation Date: {extracted_day}/"
@@ -220,5 +141,12 @@ def upload_ri():
         else:
             success_message = f"✅ File uploaded to folder '{file_basename}'! (Date not extracted)"
 
-    return render_template("home.html", success_message=success_message, error_message=error_message, met_success_message=met_success_message)
+    return render_template(
+    "home.html",
+    success_message=success_message,
+    error_message=error_message,
+    met_success_message=met_success_message,
+    estimate_text=estimate_text,
+    diff_text=diff_text,
+)
 

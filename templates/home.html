@@ -4,172 +4,197 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>File Upload</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            background-image: url("{{ url_for('static', filename='images/wall_paper.jpg') }}");
-            background-repeat: no-repeat;
-            background-position: center center;
-            background-size: cover;
-            height: 100vh;
-            margin: 0;
-            padding: 0;
-        }
-        .top-left {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            display: flex; /* Make this a flex container */
-            gap: 20px; /* Space between the two forms */
-            width: 760px; /* enough width for two forms side by side */
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .form-section {
-            background: rgba(30, 30, 30, 0.85);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.2);
-            color: white;
-            flex: 1; /* take equal width */
-            overflow-y: auto;
-            max-height: 90vh;
-        }
-        h2, h3 {
-            background-color: #ffcc00;
-            color: black;
-            display: inline-block;
-            padding: 10px 20px;
-            border-radius: 10px;
-            margin-top: 0;
-        }
-        input[type="file"],
-        input[type="number"] {
-            margin: 10px 0;
-            padding: 6px;
-            background: #333;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            width: 100%;
-        }
-        label {
-            font-size: 13px;
-            display: block;
-        }
-        button {
-            background: #ffcc00;
-            color: black;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-            width: 100%;
-            margin-top: 15px;
-        }
-        button:hover {
-            background: #ffaa00;
-        }
-        .error-message {
-            color: red;
-            font-weight: bold;
-        }
-        .success-message {
-            color: green;
-            font-weight: bold;
-        }
-        #loader {
-            display: none;
-            margin-top: 10px;
-            text-align: center;
-        }
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid #ffcc00;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        #loadingText {
-            color: white;
-            margin-top: 5px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-        footer {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-        }
-        footer a {
-            color: black;
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: bold;
-            background: #ffcc00;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-        footer a:hover {
-            background: #ffaa00;
-        }
-    </style>
+ <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #121212;
+        background-image: url("{{ url_for('static', filename='images/wall_paper.jpg') }}");
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: cover;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
 
-    <script>
-        function validateForm(event) {
-            var fileInput = document.getElementById("fileInput");
-            var errorText = document.getElementById("errorText");
-            var loader = document.getElementById("loader");
+    .top-left {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        display: flex;
+        gap: 20px;
+        width: calc(100% - 40px); /* فاصله از دو طرف */
+        max-height: 90vh;
+        overflow-y: auto;
+    }
 
-            if (fileInput.files.length === 0) {
+    .form-section {
+        background: rgba(30, 30, 30, 0.85);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.2);
+        color: white;
+        flex: 1;
+        overflow-y: auto;
+        max-height: 90vh;
+    }
+
+    #result-box {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.2);
+        
+    }
+
+    h2, h3 {
+        background-color: #ffcc00;
+        color: black;
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 10px;
+        margin-top: 0;
+    }
+
+    input[type="file"],
+    input[type="number"] {
+        margin: 10px 0;
+        padding: 6px;
+        background: #333;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        width: 100%;
+    }
+
+    label {
+        font-size: 13px;
+        display: block;
+    }
+
+    button {
+        background: #ffcc00;
+        color: black;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+        width: 100%;
+        margin-top: 15px;
+    }
+
+    button:hover {
+        background: #ffaa00;
+    }
+
+    .error-message {
+        color: red;
+        font-weight: bold;
+    }
+
+    .success-message {
+        color: green;
+        font-weight: bold;
+    }
+
+    #loader {
+        display: none;
+        margin-top: 10px;
+        text-align: center;
+    }
+
+    .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid #ffcc00;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    #loadingText {
+        color: white;
+        margin-top: 5px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    footer {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+    }
+
+    footer a {
+        color: black;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+        background: #ffcc00;
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+
+    footer a:hover {
+        background: #ffaa00;
+    }
+</style>
+
+  <script>
+    function validateAll(event) {
+        const fileInput = document.getElementById("fileInput");
+        const errorText = document.getElementById("errorText");
+        const loader = document.getElementById("loader");
+        const loadingText = document.getElementById("loadingText");
+
+        // Check if file selected
+        if (fileInput.files.length === 0) {
+            event.preventDefault();
+            errorText.innerText = "⚠️ Please select a file before uploading.";
+            return;
+        }
+
+        // Check meteorological fields
+        const form = event.target;
+        const requiredFields = ["temperature", "pressure", "humidity", "trop_scale"];
+        for (const field of requiredFields) {
+            if (!form[field].value) {
                 event.preventDefault();
-                errorText.innerText = "⚠️ Please select a file before uploading.";
-            } else {
-                errorText.innerText = "";
-                loader.style.display = "block";
+                errorText.innerText = "⚠️ Please fill in all meteorological fields.";
+                return;
             }
         }
 
-        function validateMetForm(event) {
-            const temp = event.target.temperature.value;
-            const pres = event.target.pressure.value;
-            const hum = event.target.humidity.value;
-            const scale = event.target.trop_scale.value;
-            let errorMsg = "";
+        // If all is OK
+        errorText.innerText = "";
+        loadingText.innerText = "⏳ Processing and downloading required GNSS files...";
+        loader.style.display = "block";
+    }
+</script>
 
-            if (temp === "" || pres === "" || hum === "" || scale === "") {
-                errorMsg = "⚠️ Please fill in all meteorological fields.";
-            }
-            
-            const metErrorText = document.getElementById("metErrorText");
-            if(errorMsg) {
-                event.preventDefault();
-                metErrorText.innerText = errorMsg;
-            } else {
-                metErrorText.innerText = "";
-            }
-        }
-    </script>
 </head>
+
 <body>
     <div class="top-left">
-        <!-- GNSS Upload Form Section -->
-        <div class="form-section">
-            <h2>Upload Your RINEX File</h2>
-            <form action="/upload/" method="post" enctype="multipart/form-data" onsubmit="validateForm(event)">
-                <!-- File input -->
+      
+        <form action="/upload/" method="post" enctype="multipart/form-data" onsubmit="validateAll(event)">
+            <div class="form-section">
+                <h2>Upload Your RINEX File</h2>
                 <input type="file" id="fileInput" name="file">
 
-                <!-- GNSS processing parameters -->
+                <!-- GNSS parameters -->
                 <label>UT DAYS OBSERVED (1-15): <input type="number" name="ut_days" value="2" min="1" max="15"></label>
                 <label>USER DYNAMICS (1=STATIC,2=KINEMATIC): <input type="number" name="dynamics" value="1"></label>
                 <label>OBSERVATION TO PROCESS (1=COD,2=C&P): <input type="number" name="observation" value="2"></label>
@@ -192,23 +217,8 @@
                 <label>CUTOFF ELEVATION (deg): <input type="number" step="0.1" name="elevation_cutoff" value="10.000"></label>
                 <label>GDOP CUTOFF: <input type="number" step="0.1" name="gdop_cutoff" value="20.000"></label>
 
-                <!-- Upload button -->
-                <button type="submit">Upload</button>
-            </form>
-            <p id="errorText" class="error-message"></p>
-            <div id="loader">
-                <div class="spinner"></div>
-                <p id="loadingText">Downloading files, please wait...</p>
-            </div>
-            {% if success_message %}
-                <p class="success-message">{{ success_message }}</p>
-            {% endif %}
-        </div>
-
-        <!-- Meteorological parameters form -->
-        <div class="form-section">
-            <h3>Meteorological Parameters (Tehran Default)</h3>
-            <form action="/upload_met/" method="post" onsubmit="validateMetForm(event)">
+                <!-- Meteorological Parameters -->
+                <h3>Meteorological Parameters (Tehran Default)</h3>
                 <label>1. Temperature (deg C): 
                     <input type="number" step="0.001" name="temperature" value="20.000" required>
                 </label>
@@ -221,17 +231,50 @@
                 <label>4. Tropospheric Scale: 
                     <input type="number" step="0.001" name="trop_scale" value="1.000" required>
                 </label>
-                
-            </form>
-            <p id="metErrorText" class="error-message"></p>
-            {% if met_success_message %}
-                <p class="success-message">{{ met_success_message }}</p>
-            {% endif %}
-        </div>
+
+                <!-- Submit button -->
+                <button type="submit">Submit All</button>
+
+                <!-- Loader and error/success messages -->
+                <p id="errorText" class="error-message"></p>
+                <div id="loader">
+                    <div class="spinner"></div>
+                    <p id="loadingText">Downloading files, please wait...</p>
+                </div>
+                {% if success_message %}
+                    <p class="success-message">{{ success_message }}</p>
+                {% endif %}
+                {% if met_success_message %}
+                    <p class="success-message">{{ met_success_message }}</p>
+                {% endif %}
+            </div>
+        </form>
+<div class="form-section">
+    <h2>PPP Processing Result:</h2>
+    <div id="resultContent">
+        {% if result %}
+            <p>{{ result }}</p>
+        {% else %}
+            <p>No result yet</p>
+        {% endif %}
+    </div>
+
+    <div id="result-box">
+        <h3>Coordinate Estimates </h3>
+        <pre>{{ estimate_text|default('No data yet.') }}</pre>
+
+        <h3>Coordinate Differences </h3>
+        <pre>{{ diff_text|default('No data yet.') }}</pre>
+    </div>
+</div>
+
+
+</div>
     </div>
 
     <footer>
         <a href="/about"><em>About us & user guide</em></a>
     </footer>
 </body>
+
 </html>
